@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sprunki - Phase を選ぼう</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    p {
+      color: #888;
+      text-align: center;
+      margin-bottom: 48px;
+      font-size: 1.05rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
+    .phase-card {
+      display: block;
+      text-decoration: none;
+      background: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      transition: all 0.25s;
+      cursor: pointer;
+    }
+    .phase-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+    .phase-card .icon { font-size: 3rem; margin-bottom: 12px; }
+    .phase-card .title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .phase-card .desc {
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    .card-1 { border-color: #a855f7; }
+    .card-1:hover { box-shadow: 0 12px 32px rgba(168,85,247,0.3); }
+    .card-1 .title { color: #a855f7; }
+
+    .card-2 { border-color: #f97316; }
+    .card-2:hover { box-shadow: 0 12px 32px rgba(249,115,22,0.3); }
+    .card-2 .title { color: #f97316; }
+
+    .card-3 { border-color: #3b82f6; }
+    .card-3:hover { box-shadow: 0 12px 32px rgba(59,130,246,0.3); }
+    .card-3 .title { color: #3b82f6; }
+
+    .card-4 { border-color: #ef4444; }
+    .card-4:hover { box-shadow: 0 12px 32px rgba(239,68,68,0.3); }
+    .card-4 .title { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <h1>🎵 Sprunki</h1>
+  <p>Phase を選んでゲームを始めよう！</p>
+  <div class="grid">
+    <a href="index.html" class="phase-card card-1">
+      <div class="icon">🟣</div>
+      <div class="title">Phase 3</div>
+      <div class="desc">20キャラクター<br>オリジナル版</div>
+    </a>
+    <a href="phase1/index.html" class="phase-card card-2">
+      <div class="icon">🟠</div>
+      <div class="title">Phase 1</div>
+      <div class="desc">20キャラクター<br>最初のバージョン</div>
+    </a>
+    <a href="phase2/index.html" class="phase-card card-3">
+      <div class="icon">🔵</div>
+      <div class="title">Phase 2</div>
+      <div class="desc">20キャラクター<br>第2弾</div>
+    </a>
+    <a href="phase4/index.html" class="phase-card card-4">
+      <div class="icon">🔴</div>
+      <div class="title">Phase 4</div>
+      <div class="desc">20キャラクター<br>最新版</div>
+    </a>
+  </div>
+</body>
+</html>

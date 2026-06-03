@@ -1,0 +1,122 @@
+[
+  {
+    "id": "orange_oren",
+    "name": "Orange (Oren)",
+    "image": "8c894e2d85ae8c52fd033661e0048bb7.svg",
+    "sound": "00730ecd510eb4a0d44f5010b6545fb0.wav"
+  },
+  {
+    "id": "red_raddy",
+    "name": "Red (Raddy)",
+    "image": "5b7aa378e07f899415d802add6a9491d.svg",
+    "sound": "12d4b5437a1b25aa95d0125da6ecc607.wav"
+  },
+  {
+    "id": "silver_clukr",
+    "name": "Silver (Clukr)",
+    "image": "6263da44b487697068c6fa7d2dab174c.svg",
+    "sound": "342116b901c4644538677880ed73308b.wav"
+  },
+  {
+    "id": "fun_bot",
+    "name": "Fun Bot",
+    "image": "0917ef3c8311126cf847892424b6cfa3.svg",
+    "sound": "714e1eb857011115d65401e501ee6a5a.wav"
+  },
+  {
+    "id": "green_vineria",
+    "name": "Green (Vineria)",
+    "image": "3757b4e7d0bcb3f09530a4865ab2c980.svg",
+    "sound": "7330b704729f8328aa206b8c268b0785.wav"
+  },
+  {
+    "id": "gray_gray",
+    "name": "Gray (Gray)",
+    "image": "c11d89b89fe5a623fd45d3c805bfb221.svg",
+    "sound": "ae2220c3beacc574a2f52277cf82c464.wav"
+  },
+  {
+    "id": "brown_brud",
+    "name": "Brown (brud)",
+    "image": "880f9137e4809f52e490691c61016515.svg",
+    "sound": "c2fadcce235d2636952ffab04e37d3cc.wav"
+  },
+  {
+    "id": "gold_garnold",
+    "name": "Gold (Garnold)",
+    "image": "d3f979b8e4d0975e25299541ef8dac0d.svg",
+    "sound": "13134ccfa9924cab3967f6c8b79ba642.wav"
+  },
+  {
+    "id": "lime_owakcx",
+    "name": "Lime (OWAKCX)",
+    "image": "8f2306c19cca83c3bc00ef073958acf4.svg",
+    "sound": "03fa660c7f2d58cb13296579aeb0e5c7.wav"
+  },
+  {
+    "id": "sky_blue_sky",
+    "name": "Sky blue (Sky)",
+    "image": "d16b18e884e75a1c6aabafce26824692.svg",
+    "sound": "50188c51aae4df11efa49da96540b600.wav"
+  },
+  {
+    "id": "mr._sun",
+    "name": "Mr. Sun",
+    "image": "66341a761a32027846b03c54e92e775a.svg",
+    "sound": "943c5e691a76d0d06329e943e7915ce3.wav"
+  },
+  {
+    "id": "purple_durple",
+    "name": "Purple (Durple)",
+    "image": "e94e1d3adeae7f57f9bd7372aef31aa0.svg",
+    "sound": "76d5ddc05a3cb3255ccff3dcb66f3ff3.wav"
+  },
+  {
+    "id": "mr._tree",
+    "name": "Mr. Tree",
+    "image": "5accce08cfac7152381a42698382086c.svg",
+    "sound": "6478f42eec3e04c87aed915ea94d7895.wav"
+  },
+  {
+    "id": "yellow_simon",
+    "name": "Yellow (Simon)",
+    "image": "25f0482478536d9240d83d680762fc88.svg",
+    "sound": "5bef10416df3f333a4795a63e123f10c.wav"
+  },
+  {
+    "id": "tan_tunner",
+    "name": "Tan (Tunner)",
+    "image": "10e825ffa1f2ebedf1b33e38cda12a32.svg",
+    "sound": "b939dcfe8443bea91931f9e6e23e7708.wav"
+  },
+  {
+    "id": "mr._fun_computer",
+    "name": "Mr. Fun Computer",
+    "image": "cc3293a51dcf9069042db0b9fea30840.svg",
+    "sound": "692345a1157ea7fb2a25b8496c1ed8d0.wav"
+  },
+  {
+    "id": "white_wenda",
+    "name": "White (Wenda)",
+    "image": "99c9fec675cd7a8aa7316f8922084a52.svg",
+    "sound": "5b5fdbbbc43556839b6a5d810a28f3a0.wav"
+  },
+  {
+    "id": "pink_pinki",
+    "name": "Pink (Pinki)",
+    "image": "b25d92e7e2bf8570dac47a7290e5b26e.svg",
+    "sound": "a1274350a0f95a3b528ddf1648c1eda5.wav"
+  },
+  {
+    "id": "blue_jevin",
+    "name": "Blue (Jevin)",
+    "image": "b55afe4be5802e5f2ed231024d8b2e68.svg",
+    "sound": "425a2da19fceb132802364ecc050ea64.wav"
+  },
+  {
+    "id": "black",
+    "name": "Black?",
+    "image": "571dfa01eac264fab4d5b48cc8a04c87.svg",
+    "sound": "3b725f348a5b90f2190ff1c50709f1cd.wav"
+  }
+]

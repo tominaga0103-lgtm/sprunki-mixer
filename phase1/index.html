@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sprunki Phase 1 - プレイ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 12px 24px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header h1 {
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, #f97316, #fb923c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .reset-btn {
+      margin-left: auto;
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .reset-btn:hover { background: #444; }
+
+    .stage {
+      width: 100%;
+      max-width: 960px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+      padding: 0 0 40px;
+    }
+
+    .char-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      padding: 8px 4px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: #1e1e1e;
+      transition: all 0.2s;
+      position: relative;
+      user-select: none;
+    }
+    .char-btn:hover {
+      border-color: #f97316;
+      background: #1a1a2a;
+    }
+    .char-btn.active {
+      border-color: #f97316;
+      background: #1a1a2a;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+    }
+
+    /* グレースケール → カラー */
+    .char-btn img {
+      width: 64px;
+      height: 80px;
+      object-fit: contain;
+      filter: grayscale(100%) brightness(0.7);
+      transition: filter 0.3s;
+    }
+    .char-btn.active img {
+      filter: grayscale(0%) brightness(1);
+    }
+    .char-btn:hover:not(.active) img {
+      filter: grayscale(60%) brightness(0.9);
+    }
+
+    .char-name {
+      font-size: 0.65rem;
+      color: #888;
+      margin-top: 4px;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .char-btn.active .char-name {
+      color: #fb923c;
+    }
+
+    /* 音符エフェクト */
+    .note {
+      position: absolute;
+      top: -10px;
+      font-size: 1.1rem;
+      animation: float-note 1.2s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes float-note {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-40px) scale(1.4); }
+    }
+
+    /* 空ステージメッセージ */
+    .empty-msg {
+      color: #444;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 40px 0;
+      width: 100%;
+    }
+
+    /* ローディング */
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .loading-text {
+      color: #f97316;
+      font-size: 1.1rem;
+      margin-top: 16px;
+      animation: pulse 1s ease-in-out infinite alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.5; }
+      to   { opacity: 1; }
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #333;
+      border-top-color: #f97316;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">サウンドを読み込み中...</div>
+</div>
+
+<header>
+  <h1>🎵 Sprunki Phase 1</h1>
+  <button class="reset-btn" onclick="resetAll()">🔄 リセット</button>
+</header>
+
+<div class="stage">
+  <div class="palette" id="palette"></div>
+</div>
+
+<script>
+const CHARS = [
+  { id: "orange_oren", name: "Orange (Oren)", image: "assets/images/5f188f291a010091bd38162b7642e9f4.svg", sound: "assets/sounds/2ff9e556ae0b3cb4f9e4750dbe9b17d4.wav" },
+  { id: "red_raddy", name: "Red (Raddy)", image: "assets/images/d7dc847b001632e8bdf1a390145f10ac.svg", sound: "assets/sounds/ae111f7b2abb4ffe113d49e85cadcf7c.wav" },
+  { id: "silver_clukr", name: "Silver (Clukr)", image: "assets/images/b015564e47af15b260825f7d6af8c643.svg", sound: "assets/sounds/70a511bac6487b9dfb4b9420ad7e86f6.wav" },
+  { id: "fun_bot", name: "Fun Bot", image: "assets/images/4539a15043d037f0b70f71553b30c9cd.svg", sound: "assets/sounds/5af077595ce5ece3c73a7cb302394015.wav" },
+  { id: "green_vineria", name: "Green (Vineria)", image: "assets/images/876921f082afc3d621d511481167abc4.svg", sound: "assets/sounds/7f08e76918d14fdfa46c4c61728808fc.wav" },
+  { id: "gray_gray", name: "Gray (Gray)", image: "assets/images/2b0d707dc5b6ea94ca34186218819915.svg", sound: "assets/sounds/ac76a6a92f290e7fac145dd9cf8c2b32.wav" },
+  { id: "brown_brud", name: "Brown (brud)", image: "assets/images/d8d68126b5adc22c77480dd7d6bef466.svg", sound: "assets/sounds/ef3c0e50f5c2ac26bfc5700fce42db63.wav" },
+  { id: "gold_garnold", name: "Gold (Garnold)", image: "assets/images/9601af13c89996f130ecc71a8eb0febc.svg", sound: "assets/sounds/20dd7bff5b7f33e61e878d6e7b03e48c.wav" },
+  { id: "lime_owakcx", name: "Lime (OWAKCX)", image: "assets/images/654ee2c380273f6f0a7e263a6d9b6b28.svg", sound: "assets/sounds/793e0dde46587175bc6817a4cfd37699.wav" },
+  { id: "sky_blue_sky", name: "Sky blue (Sky)", image: "assets/images/6ee7ba49eae48f5753deb07e0b32199b.svg", sound: "assets/sounds/c39e54d80f08fd650cc23e04b733a83d.wav" },
+  { id: "mr._sun", name: "Mr. Sun", image: "assets/images/78203662c512913b3b4a16300cdf194a.svg", sound: "assets/sounds/d4864d2ac4176cff6ecffa0064f6a9b8.wav" },
+  { id: "purple_durple", name: "Purple (Durple)", image: "assets/images/89536b13f86fa5415b0d51716634fa9e.svg", sound: "assets/sounds/a61d4acb6949d64706ec7246eefc7e96.wav" },
+  { id: "mr._tree", name: "Mr. Tree", image: "assets/images/1ccf355435482ae38d24bd5b948ef417.svg", sound: "assets/sounds/d690ea637972fe97870d672dca854c80.wav" },
+  { id: "yellow_simon", name: "Yellow (Simon)", image: "assets/images/543119325edb49e5294dd252d196b479.svg", sound: "assets/sounds/5a09fb11b6441a49fc732a93b3b86b00.wav" },
+  { id: "tan_tunner", name: "Tan (Tunner)", image: "assets/images/b8faa34280594a1de2cae550193055a1.svg", sound: "assets/sounds/92ed28220e031b247f5bcce8d0436130.wav" },
+  { id: "mr._fun_computer", name: "Mr. Fun Computer", image: "assets/images/a08bbafe2167b837995fd8bf79f5a27f.svg", sound: "assets/sounds/cc85f2be1b1764358cd1ab84455d00a0.wav" },
+  { id: "white_wenda", name: "White (Wenda)", image: "assets/images/16d88ed40d2540e0196ad94687a163c3.svg", sound: "assets/sounds/d3412e9a60ca1e4fb3db49587687ec28.wav" },
+  { id: "pink_pinki", name: "Pink (Pinki)", image: "assets/images/4cf8eac32e710942a8ebc364559b1a44.svg", sound: "assets/sounds/be1cb011ce50969caf9511048105f167.wav" },
+  { id: "blue_jevin", name: "Blue (Jevin)", image: "assets/images/a43501db4b83e7684b7e6bbb0f735027.svg", sound: "assets/sounds/304cc4859cb39313ff0948047c5ff11e.wav" },
+  { id: "black", name: "Black?", image: "assets/images/08bc20f75cb5b089296dc66c5418096c.svg", sound: "assets/sounds/3b725f348a5b90f2190ff1c50709f1cd.wav" },
+];
+
+const NOTES = ['♩', '♪', '♫', '♬', '🎵', '🎶'];
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const audioBuffers = {};
+const activeSources = {};
+const activeChars = new Set();
+
+// 音源をプリロード
+async function loadSounds() {
+  let loaded = 0;
+  for (const c of CHARS) {
+    try {
+      const res = await fetch(c.sound);
+      const buf = await res.arrayBuffer();
+      audioBuffers[c.id] = await audioCtx.decodeAudioData(buf);
+    } catch(e) {
+      console.warn('Failed to load', c.sound, e);
+    }
+    loaded++;
+    document.querySelector('.loading-text').textContent = `サウンドを読み込み中... (${loaded}/${CHARS.length})`;
+  }
+  document.getElementById('loading').style.display = 'none';
+}
+
+function playLoop(charId) {
+  stopLoop(charId);
+  const buf = audioBuffers[charId];
+  if (!buf) return;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  src.loop = true;
+  src.connect(audioCtx.destination);
+  src.start(0);
+  activeSources[charId] = src;
+}
+
+function stopLoop(charId) {
+  if (activeSources[charId]) {
+    try { activeSources[charId].stop(); } catch(e) {}
+    delete activeSources[charId];
+  }
+}
+
+function toggleChar(charId) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const btn = document.querySelector(`[data-id="${charId}"]`);
+  if (activeChars.has(charId)) {
+    activeChars.delete(charId);
+    stopLoop(charId);
+    btn.classList.remove('active');
+  } else {
+    activeChars.add(charId);
+    playLoop(charId);
+    btn.classList.add('active');
+    spawnNotes(btn);
+  }
+}
+
+function resetAll() {
+  for (const id of [...activeChars]) {
+    stopLoop(id);
+    const btn = document.querySelector(`[data-id="${id}"]`);
+    if (btn) btn.classList.remove('active');
+  }
+  activeChars.clear();
+}
+
+function spawnNotes(btn) {
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      const note = document.createElement('span');
+      note.className = 'note';
+      note.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
+      note.style.left = (20 + Math.random() * 40) + 'px';
+      note.style.animationDelay = (Math.random() * 0.3) + 's';
+      btn.appendChild(note);
+      note.addEventListener('animationend', () => note.remove());
+    }, i * 150);
+  }
+}
+
+// パレット生成
+function renderPalette() {
+  const palette = document.getElementById('palette');
+  palette.innerHTML = CHARS.map(c => `
+    <div class="char-btn" data-id="${c.id}" onclick="toggleChar('${c.id}')">
+      <img src="${c.image}" alt="${c.name}">
+      <div class="char-name">${c.name}</div>
+    </div>
+  `).join('');
+}
+
+renderPalette();
+loadSounds();
+</script>
+</body>
+</html>

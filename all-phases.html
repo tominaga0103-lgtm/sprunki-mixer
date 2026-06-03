@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sprunki - 全フェーズ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #1a1a1a;
+      border-bottom: 1px solid #333;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .reset-btn {
+      margin-left: auto;
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: background 0.2s;
+    }
+    .reset-btn:hover { background: #444; }
+
+    /* ローディング */
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 4px solid #333;
+      border-top-color: #a855f7;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      color: #a855f7;
+      margin-top: 14px;
+      font-size: 1rem;
+      animation: pulse 1s ease-in-out infinite alternate;
+    }
+    @keyframes pulse { from {opacity:0.5} to {opacity:1} }
+
+    /* テーブルラッパー */
+    .table-wrap {
+      overflow-x: auto;
+      padding: 20px;
+    }
+
+    /* テーブル */
+    table {
+      border-collapse: collapse;
+      min-width: 100%;
+    }
+
+    /* ヘッダー行（キャラクター名） */
+    thead th {
+      padding: 4px 2px 10px;
+      text-align: center;
+      font-size: 0.65rem;
+      color: #666;
+      font-weight: 500;
+      min-width: 72px;
+      vertical-align: bottom;
+    }
+    thead th:first-child {
+      min-width: 72px;
+      text-align: left;
+      padding-left: 8px;
+    }
+
+    /* フェーズ行 */
+    tbody tr {
+      border-top: 1px solid #222;
+    }
+    tbody tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* フェーズラベル */
+    .phase-label {
+      padding: 8px 10px 8px 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .phase-label span {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+    }
+    .p2 span { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+    .p3 span { background: rgba(168,85,247,0.15); color: #a855f7; border: 1px solid rgba(168,85,247,0.3); }
+    .p4 span { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .p5 span { background: rgba(249,115,22,0.15); color: #f97316; border: 1px solid rgba(249,115,22,0.3); }
+    .p7 span { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    .p8 span { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+
+    /* キャラクターセル */
+    td.char-cell {
+      padding: 4px;
+      vertical-align: middle;
+    }
+
+    .char-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      width: 68px;
+      padding: 6px 4px 4px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background: #1e1e1e;
+      cursor: pointer;
+      transition: all 0.18s;
+      position: relative;
+      user-select: none;
+    }
+    .char-btn:hover {
+      border-color: #555;
+      background: #2a2a2a;
+    }
+
+    .char-btn img {
+      width: 48px;
+      height: 56px;
+      object-fit: contain;
+      filter: grayscale(100%) brightness(0.6);
+      transition: filter 0.25s;
+    }
+
+    /* アクティブ状態（カラー化） */
+    .char-btn.active img {
+      filter: grayscale(0%) brightness(1.05);
+    }
+    /* フェーズごとのアクティブボーダー */
+    tr.row-p2 .char-btn.active { border-color: #3b82f6; box-shadow: 0 0 12px rgba(59,130,246,0.4);  background: rgba(59,130,246,0.08); }
+    tr.row-p3 .char-btn.active { border-color: #a855f7; box-shadow: 0 0 12px rgba(168,85,247,0.4); background: rgba(168,85,247,0.08); }
+    tr.row-p4 .char-btn.active { border-color: #ef4444; box-shadow: 0 0 12px rgba(239,68,68,0.4);  background: rgba(239,68,68,0.08); }
+    tr.row-p5 .char-btn.active { border-color: #f97316; box-shadow: 0 0 12px rgba(249,115,22,0.4); background: rgba(249,115,22,0.08); }
+    tr.row-p7 .char-btn.active { border-color: #10b981; box-shadow: 0 0 12px rgba(16,185,129,0.4); background: rgba(16,185,129,0.08); }
+    tr.row-p8 .char-btn.active { border-color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+
+    /* このフェーズにいないキャラ */
+    .char-empty {
+      width: 68px;
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    /* 次のループ開始まで待機中の点滅 */
+    .char-btn.pending img {
+      animation: pending-blink 0.4s ease-in-out infinite alternate;
+    }
+    @keyframes pending-blink {
+      from { filter: grayscale(100%) brightness(0.6); }
+      to   { filter: grayscale(0%) brightness(0.9); }
+    }
+
+    /* 音符エフェクト */
+    .note {
+      position: absolute;
+      top: -8px;
+      font-size: 0.9rem;
+      animation: float-note 1.1s ease-out forwards;
+      pointer-events: none;
+      z-index: 5;
+    }
+    @keyframes float-note {
+      0%   { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-32px) scale(1.3); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text" id="load-text">サウンドを読み込み中...</div>
+</div>
+
+<header>
+  <h1>🎵 Sprunki 全フェーズ</h1>
+  <button class="reset-btn" onclick="resetAll()">🔄 全リセット</button>
+</header>
+
+<div class="table-wrap">
+  <table id="main-table">
+    <thead id="thead"></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<script src="phases-aligned.js"></script>
+<script>
+const PHASE_CONFIG = [
+  { key: 'phase2', label: 'Phase 2', rowClass: 'row-p2 p2' },
+  { key: 'phase3', label: 'Phase 3', rowClass: 'row-p3 p3' },
+  { key: 'phase4', label: 'Phase 4', rowClass: 'row-p4 p4' },
+  { key: 'phase5', label: 'Phase 5', rowClass: 'row-p5 p5' },
+  { key: 'phase7', label: 'Phase 7', rowClass: 'row-p7 p7' },
+  { key: 'phase8', label: 'Phase 8', rowClass: 'row-p8 p8' },
+];
+const NOTES = ['♩','♪','♫','♬','🎵','🎶'];
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const audioBuffers = {};  // key: "phaseKey_charIdx"
+const activeSources = {};
+const activeState = {};   // key: "phaseKey_charIdx" -> true/false
+
+// ===== クォンタイズ同期 =====
+const LOOP_DURATION = 8.0; // 全ループが8秒
+let masterStartTime = null; // 最初の音がスタートした正確な時刻
+
+// 次のループ先頭（8秒の区切り）の時刻を返す
+function getQuantizedStart() {
+  const now = audioCtx.currentTime;
+  if (masterStartTime === null) {
+    // 初音：わずかなバッファを加えて即スタート
+    return now + 0.02;
+  }
+  // 経過したループ数から次の境界を計算
+  const elapsed = now - masterStartTime;
+  const cyclesDone = Math.floor(elapsed / LOOP_DURATION);
+  return masterStartTime + (cyclesDone + 1) * LOOP_DURATION;
+}
+
+// ヘッダー生成（正式名称を使用）
+function buildHeader() {
+  const tr = document.createElement('tr');
+  const th0 = document.createElement('th');
+  th0.textContent = '';
+  tr.appendChild(th0);
+  CANONICAL_CHARS.forEach(c => {
+    const th = document.createElement('th');
+    th.textContent = c.display;
+    tr.appendChild(th);
+  });
+  document.getElementById('thead').appendChild(tr);
+}
+
+// テーブル本体生成（canonical順に列を揃える）
+function buildTable() {
+  const tbody = document.getElementById('tbody');
+  PHASE_CONFIG.forEach(phase => {
+    const tr = document.createElement('tr');
+    tr.className = phase.rowClass;
+
+    const tdLabel = document.createElement('td');
+    tdLabel.className = 'phase-label ' + phase.rowClass.split(' ')[1];
+    tdLabel.innerHTML = `<span>${phase.label}</span>`;
+    tr.appendChild(tdLabel);
+
+    const phaseData = PHASES_ALIGNED[phase.key];
+
+    CANONICAL_CHARS.forEach(canon => {
+      const td = document.createElement('td');
+      td.className = 'char-cell';
+      const c = phaseData[canon.key];
+
+      if (c) {
+        // キャラあり：ボタン表示
+        const key = phase.key + '_' + canon.key;
+        const btn = document.createElement('div');
+        btn.className = 'char-btn';
+        btn.dataset.key = key;
+        btn.title = c.name;
+        btn.innerHTML = `<img src="${c.image}" alt="${c.name}">`;
+        btn.addEventListener('click', () => toggleChar(phase.key, canon.key, c, btn));
+        td.appendChild(btn);
+      } else {
+        // キャラなし：空セル
+        td.innerHTML = '<div class="char-empty">—</div>';
+      }
+
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleChar(phaseKey, canonKey, charData, btn) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const key = phaseKey + '_' + canonKey;
+  if (activeState[key]) {
+    // オフ
+    activeState[key] = false;
+    stopLoop(key);
+    btn.classList.remove('active', 'pending');
+  } else {
+    // オン：次のループ先頭まで待ってからスタート
+    activeState[key] = true;
+    const startAt = getQuantizedStart();
+    const waitMs = Math.max(0, (startAt - audioCtx.currentTime) * 1000);
+
+    btn.classList.add('pending');
+    playLoopAt(key, charData.sound, startAt);
+
+    // 鳴り始めたタイミングでpending解除→active
+    setTimeout(() => {
+      if (activeState[key]) {
+        btn.classList.remove('pending');
+        btn.classList.add('active');
+        spawnNotes(btn);
+      }
+    }, waitMs);
+  }
+}
+
+function playLoopAt(key, soundPath, startAt) {
+  stopLoop(key);
+  // サウンドパスからバッファを取得（キーとパスの両方に対応）
+  const buf = audioBuffers[key] || audioBuffers[soundPath];
+  if (!buf) return;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf;
+  src.loop = true;
+  src.loopStart = 0;
+  src.loopEnd = Math.min(LOOP_DURATION, buf.duration);
+  src.connect(audioCtx.destination);
+  src.start(startAt);
+
+  // masterStartTimeはここで確定（最初の音がスケジュールされた瞬間）
+  if (masterStartTime === null) {
+    masterStartTime = startAt;
+  }
+
+  activeSources[key] = src;
+}
+
+function stopLoop(key) {
+  if (activeSources[key]) {
+    try { activeSources[key].stop(); } catch(e){}
+    delete activeSources[key];
+  }
+}
+
+function resetAll() {
+  Object.keys(activeState).forEach(key => {
+    if (activeState[key]) {
+      activeState[key] = false;
+      stopLoop(key);
+      const btn = document.querySelector(`[data-key="${key}"]`);
+      if (btn) btn.classList.remove('active');
+    }
+  });
+  masterStartTime = null; // マスタータイムもリセット
+}
+
+function spawnNotes(btn) {
+  for (let i = 0; i < 2; i++) {
+    setTimeout(() => {
+      const note = document.createElement('span');
+      note.className = 'note';
+      note.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
+      note.style.left = (10 + Math.random() * 30) + 'px';
+      btn.appendChild(note);
+      note.addEventListener('animationend', () => note.remove());
+    }, i * 120);
+  }
+}
+
+// サウンドをプリロード（phases-aligned.jsのデータを使用）
+async function loadSounds() {
+  // 重複なしでサウンドパスを収集
+  const soundSet = new Map(); // soundPath -> key
+  PHASE_CONFIG.forEach(phase => {
+    const phaseData = PHASES_ALIGNED[phase.key];
+    CANONICAL_CHARS.forEach(canon => {
+      const c = phaseData[canon.key];
+      if (c) {
+        const key = phase.key + '_' + canon.key;
+        soundSet.set(c.sound, key);
+      }
+    });
+  });
+
+  const allItems = [...soundSet.entries()].map(([sound, key]) => ({ key, sound }));
+  let done = 0;
+  const loadText = document.getElementById('load-text');
+
+  for (const item of allItems) {
+    try {
+      const res = await fetch(item.sound);
+      const buf = await res.arrayBuffer();
+      audioBuffers[item.key] = await audioCtx.decodeAudioData(buf);
+    } catch(e) {
+      console.warn('Failed:', item.sound);
+    }
+    done++;
+    loadText.textContent = `サウンドを読み込み中... (${done}/${allItems.length})`;
+  }
+  document.getElementById('loading').style.display = 'none';
+}
+
+buildHeader();
+buildTable();
+loadSounds();
+</script>
+</body>
+</html>

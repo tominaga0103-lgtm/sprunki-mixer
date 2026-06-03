@@ -1,0 +1,146 @@
+[
+  {
+    "id": "orange_oren",
+    "name": "Orange (Oren)",
+    "image": "c8c5d24a951fc7360e49e337223ceccc.svg",
+    "sound": "a89eaa766d3f1df87c8f6ab6075cf61e.wav"
+  },
+  {
+    "id": "red_raddy",
+    "name": "Red (Raddy)",
+    "image": "216d18052db47382a72e7547350266f6.svg",
+    "sound": "6a8bf72156fc811c00174a4dca16dc0b.wav"
+  },
+  {
+    "id": "silver_clukr",
+    "name": "Silver (Clukr)",
+    "image": "63e7dd4a2b0cdd6c4885f780110b84c6.svg",
+    "sound": "1a900dc7151e0536cdb1f5aec2c1cec7.wav"
+  },
+  {
+    "id": "fun_bot",
+    "name": "Fun Bot",
+    "image": "3f1fc754b00165fab3ccd8f6a9f1c5ec.svg",
+    "sound": "26e30bd9914bb1b2630cca9fa0a941c1.wav"
+  },
+  {
+    "id": "green_vineria",
+    "name": "Green (Vineria)",
+    "image": "4bd30d75897d538b5a483dac462153d5.svg",
+    "sound": "287f21cbbe7b1716527e78734dee80a8.wav"
+  },
+  {
+    "id": "gray_gray",
+    "name": "Gray (Gray)",
+    "image": "c3368979be6cafef00b778812bac8ba5.svg",
+    "sound": "093be1c0754666b8e75d0b242668b741.wav"
+  },
+  {
+    "id": "brown_brud",
+    "name": "Brown (brud)",
+    "image": "191c82e47f512b6a6c7f17d0ac94babf.svg",
+    "sound": "867c2d13dd9fc3b976c03a6444a01667.wav"
+  },
+  {
+    "id": "gold_garnold",
+    "name": "Gold (Garnold)",
+    "image": "c6df11c3519838b8db674998ab2866d8.svg",
+    "sound": "2aaa4591f88475be3861871d8b9dfc38.wav"
+  },
+  {
+    "id": "lime_owakcx",
+    "name": "Lime (OWAKCX)",
+    "image": "baf0683a3fcc28cd2a029113511d408b.svg",
+    "sound": "c315bb742ef5212b304face83f51b896.wav"
+  },
+  {
+    "id": "sky_blue_sky",
+    "name": "Sky blue (Sky)",
+    "image": "cae1aff82151ee4891e983b1ce1954da.svg",
+    "sound": "583b86fe783db90650e2c4ef8f40c320.wav"
+  },
+  {
+    "id": "mr._sun",
+    "name": "Mr. Sun",
+    "image": "4aa8c1ad951f801097341940050765d2.svg",
+    "sound": "6495170baf8abd0a2979f9b0658d5698.wav"
+  },
+  {
+    "id": "purple_durple",
+    "name": "Purple (Durple)",
+    "image": "b942163b386d60dc58c2b628b35d9029.svg",
+    "sound": "a62237e5955dfee82fec0e39c61f0fb6.wav"
+  },
+  {
+    "id": "mr._tree",
+    "name": "Mr. Tree",
+    "image": "e05cf98f40a33bb1e414c4d754d8c0bc.svg",
+    "sound": "e004db62fe80ed35a8191faf9f83685f.wav"
+  },
+  {
+    "id": "yellow_simon",
+    "name": "Yellow (Simon)",
+    "image": "2615525109540627adbef6836d201de3.svg",
+    "sound": "4579686c7308df322e3415c7bf0dab22.wav"
+  },
+  {
+    "id": "tan_tunner",
+    "name": "Tan (Tunner)",
+    "image": "b16449d75974d29bfc42d38ea3bb4a29.svg",
+    "sound": "7a3855c2f9f33d6a7f5d18d99836d413.wav"
+  },
+  {
+    "id": "mr._fun_computer",
+    "name": "Mr. Fun Computer",
+    "image": "1938e9513c4ec778746bca6df95d1e37.svg",
+    "sound": "a51b07c49d46f931bd8526c4d81aaff9.wav"
+  },
+  {
+    "id": "white_wenda",
+    "name": "White (Wenda)",
+    "image": "2593e3608cee037f5253b5e365561361.svg",
+    "sound": "0c63da955c69e74db2c1e47dbf9fe38d.wav"
+  },
+  {
+    "id": "pink_pinki",
+    "name": "Pink (Pinki)",
+    "image": "89bcfc68854039e62a3a7ada41010192.svg",
+    "sound": "943fdcc4f4410de763f2d05a75cea5fc.wav"
+  },
+  {
+    "id": "black_jevin",
+    "name": "black (Jevin)",
+    "image": "5ba9a6512805b262fdf8af8beff33b5b.svg",
+    "sound": "a749be601856194648d23aec62801a1b.wav"
+  },
+  {
+    "id": "black",
+    "name": "Black?",
+    "image": "839c1e9cf0337bd845e45e0b83ed433e.svg",
+    "sound": "aabd40a232ace343b3d08354430cf174.wav"
+  },
+  {
+    "id": "prewiew",
+    "name": "prewiew",
+    "image": "01513b5210eea10fabbebdb6f569415b.svg",
+    "sound": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+  },
+  {
+    "id": "miguel",
+    "name": "Miguel",
+    "image": "64af403e92850f1adce5eb0e2155f5a4.svg",
+    "sound": "7a510b50e8f9d14445c99e9df1fd3581.wav"
+  },
+  {
+    "id": "asets",
+    "name": "asets",
+    "image": "6a5ef2155a564a71ff8fc46a6ad6765e.svg",
+    "sound": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+  },
+  {
+    "id": "sprite1",
+    "name": "Sprite1",
+    "image": "14e46ec3e2ba471c2adfe8f119052307.svg",
+    "sound": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+  }
+]
