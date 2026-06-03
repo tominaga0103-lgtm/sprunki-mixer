@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sprunki Mixer - モバイルUIイメージ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0f0f;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+      max-width: 430px; /* iPhone 14 Proサイズ */
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* ヘッダー */
+    header {
+      background: #1a1a1a;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #333;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .reset-btn {
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* フェーズタブ */
+    .phase-tabs {
+      display: flex;
+      overflow-x: auto;
+      padding: 12px 16px;
+      gap: 8px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #222;
+      scrollbar-width: none;
+    }
+    .phase-tabs::-webkit-scrollbar { display: none; }
+
+    .phase-tab {
+      flex-shrink: 0;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-p2 { background: rgba(59,130,246,0.15); color: #3b82f6; border-color: rgba(59,130,246,0.3); }
+    .tab-p3 { background: rgba(168,85,247,0.3);  color: #a855f7; border-color: #a855f7; }  /* アクティブ */
+    .tab-p4 { background: rgba(239,68,68,0.15);  color: #ef4444; border-color: rgba(239,68,68,0.3); }
+    .tab-p5 { background: rgba(249,115,22,0.15); color: #f97316; border-color: rgba(249,115,22,0.3); }
+    .tab-p7 { background: rgba(16,185,129,0.15); color: #10b981; border-color: rgba(16,185,129,0.3); }
+    .tab-p8 { background: rgba(245,158,11,0.15); color: #f59e0b; border-color: rgba(245,158,11,0.3); }
+
+    /* キャラクターグリッド */
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 16px;
+    }
+
+    .char-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #1e1e1e;
+      border: 2px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 10px 6px 8px;
+      cursor: pointer;
+      position: relative;
+      /* タッチしやすい最小サイズ */
+      min-height: 90px;
+    }
+    .char-btn.active {
+      border-color: #a855f7;
+      background: rgba(168,85,247,0.1);
+      box-shadow: 0 0 14px rgba(168,85,247,0.35);
+    }
+    .char-btn img {
+      width: 52px;
+      height: 60px;
+      object-fit: contain;
+      filter: grayscale(100%) brightness(0.6);
+      transition: filter 0.25s;
+    }
+    .char-btn.active img {
+      filter: grayscale(0%) brightness(1.05);
+    }
+    .char-name {
+      font-size: 0.6rem;
+      color: #888;
+      margin-top: 5px;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .char-btn.active .char-name { color: #c084fc; }
+
+    /* 再生中インジケーター */
+    .playing-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #a855f7;
+      animation: blink 1s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* 再生中バー（画面下部） */
+    .now-playing {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 430px;
+      margin: 0 auto;
+      background: #1a1a1a;
+      border-top: 1px solid #333;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .now-playing-label {
+      font-size: 0.7rem;
+      color: #666;
+    }
+    .now-playing-icons {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .now-playing-icons::-webkit-scrollbar { display: none; }
+    .mini-char {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(168,85,247,0.2);
+      border: 1px solid #a855f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      color: #c084fc;
+      flex-shrink: 0;
+    }
+
+    /* デモ用ダミーキャラ */
+    .dummy-img {
+      width: 52px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      filter: grayscale(100%) brightness(0.5);
+    }
+    .char-btn.active .dummy-img { filter: none; }
+
+    /* スペーサー（固定フッター分） */
+    .spacer { height: 60px; }
+
+    /* 注釈 */
+    .note {
+      text-align: center;
+      color: #555;
+      font-size: 0.7rem;
+      padding: 8px;
+      margin-top: -8px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🎵 Sprunki Mixer</h1>
+  <button class="reset-btn">🔄 リセット</button>
+</header>
+
+<!-- フェーズ切り替えタブ -->
+<div class="phase-tabs">
+  <div class="phase-tab tab-p2">Phase 2</div>
+  <div class="phase-tab tab-p3">Phase 3</div>
+  <div class="phase-tab tab-p4">Phase 4</div>
+  <div class="phase-tab tab-p5">Phase 5</div>
+  <div class="phase-tab tab-p7">Phase 7</div>
+  <div class="phase-tab tab-p8">Phase 8</div>
+</div>
+
+<p class="note">← スワイプでフェーズ切替</p>
+
+<!-- キャラグリッド（Phase 3表示中） -->
+<div class="char-grid">
+
+  <!-- アクティブ例 -->
+  <div class="char-btn active">
+    <div class="playing-dot"></div>
+    <div class="dummy-img">🟣</div>
+    <div class="char-name">Oren</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🔴</div>
+    <div class="char-name">Raddy</div>
+  </div>
+
+  <div class="char-btn active">
+    <div class="playing-dot"></div>
+    <div class="dummy-img">⚪</div>
+    <div class="char-name">Clukr</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🤖</div>
+    <div class="char-name">Fun Bot</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🟢</div>
+    <div class="char-name">Vineria</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🩶</div>
+    <div class="char-name">Gray</div>
+  </div>
+
+  <div class="char-btn active">
+    <div class="playing-dot"></div>
+    <div class="dummy-img">🟤</div>
+    <div class="char-name">Brud</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🌟</div>
+    <div class="char-name">Garnold</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">💚</div>
+    <div class="char-name">OWAKCX</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🩵</div>
+    <div class="char-name">Sky</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">☀️</div>
+    <div class="char-name">Mr. Sun</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🔮</div>
+    <div class="char-name">Durple</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🌳</div>
+    <div class="char-name">Mr. Tree</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">💛</div>
+    <div class="char-name">Simon</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🧡</div>
+    <div class="char-name">Tunner</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🖥️</div>
+    <div class="char-name">Mr.Fun PC</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🤍</div>
+    <div class="char-name">Wenda</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🩷</div>
+    <div class="char-name">Pinki</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">💙</div>
+    <div class="char-name">Jevin</div>
+  </div>
+
+  <div class="char-btn">
+    <div class="dummy-img">🖤</div>
+    <div class="char-name">Black</div>
+  </div>
+
+</div>
+
+<div class="spacer"></div>
+
+<!-- 再生中バー -->
+<div class="now-playing">
+  <span class="now-playing-label">再生中</span>
+  <div class="now-playing-icons">
+    <div class="mini-char">Oren</div>
+    <div class="mini-char">Clukr</div>
+    <div class="mini-char">Brud</div>
+  </div>
+</div>
+
+</body>
+</html>
