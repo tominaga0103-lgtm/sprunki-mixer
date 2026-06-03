@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sprunki Mixer</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -10,7 +10,6 @@
       background: #0f0f0f;
       color: #fff;
       font-family: system-ui, -apple-system, sans-serif;
-      max-width: 600px;
       margin: 0 auto;
       min-height: 100vh;
       padding-bottom: 70px;
@@ -36,7 +35,8 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .reset-btn {
+    .header-right { display: flex; gap: 8px; align-items: center; }
+    .reset-btn, .view-btn {
       background: #333;
       border: 1px solid #555;
       color: #fff;
@@ -45,46 +45,9 @@
       font-size: 0.8rem;
       cursor: pointer;
     }
-    .reset-btn:active { background: #444; }
+    .reset-btn:active, .view-btn:active { background: #444; }
 
-    /* フェーズタブ */
-    .phase-tabs {
-      display: flex;
-      overflow-x: auto;
-      padding: 12px 16px;
-      gap: 8px;
-      background: #1a1a1a;
-      border-bottom: 1px solid #222;
-      scrollbar-width: none;
-      position: sticky;
-      top: 53px;
-      z-index: 9;
-    }
-    .phase-tabs::-webkit-scrollbar { display: none; }
-    .phase-tab {
-      flex-shrink: 0;
-      padding: 8px 18px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: all 0.2s;
-      white-space: nowrap;
-      background: #2a2a2a;
-      color: #888;
-    }
-    .phase-tab.active-tab {
-      /* 色はJSで動的に設定 */
-    }
-
-    /* キャラクターグリッド */
-    .char-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 16px;
-    }
+    /* ===== 共通：キャラボタン ===== */
     .char-btn {
       display: flex;
       flex-direction: column;
@@ -119,13 +82,10 @@
       line-height: 1.2;
     }
     .char-btn.active .char-name { color: #ddd; }
-
     .playing-dot {
       position: absolute;
-      top: 6px;
-      right: 6px;
-      width: 8px;
-      height: 8px;
+      top: 6px; right: 6px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: currentColor;
       animation: blink 1s ease-in-out infinite;
@@ -134,13 +94,94 @@
     .char-btn.active .playing-dot { display: block; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    /* 再生中バー */
+    /* 音符エフェクト */
+    .note {
+      position: absolute; top: -6px;
+      font-size: 0.9rem;
+      animation: float-note 1.1s ease-out forwards;
+      pointer-events: none; z-index: 5;
+    }
+    @keyframes float-note {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-32px) scale(1.3); }
+    }
+
+    /* ===== モバイル表示（タブ + グリッド）===== */
+    .mobile-view { max-width: 600px; margin: 0 auto; }
+    .phase-tabs {
+      display: flex;
+      overflow-x: auto;
+      padding: 12px 16px;
+      gap: 8px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #222;
+      scrollbar-width: none;
+      position: sticky;
+      top: 53px;
+      z-index: 9;
+    }
+    .phase-tabs::-webkit-scrollbar { display: none; }
+    .phase-tab {
+      flex-shrink: 0;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 2px solid transparent;
+      white-space: nowrap;
+      background: #2a2a2a;
+      color: #888;
+    }
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 16px;
+    }
+
+    /* ===== PC表示（テーブル）===== */
+    .desktop-view { display: none; padding: 20px; overflow-x: auto; }
+    table { border-collapse: collapse; min-width: 100%; }
+    thead th {
+      padding: 4px 2px 10px;
+      text-align: center;
+      font-size: 0.65rem;
+      color: #666;
+      font-weight: 500;
+      min-width: 72px;
+      vertical-align: bottom;
+    }
+    thead th:first-child { min-width: 80px; text-align: left; }
+    tbody tr { border-top: 1px solid #222; }
+    .phase-label {
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .phase-label span {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+    }
+    td.char-cell { padding: 4px; vertical-align: middle; }
+    .char-empty {
+      width: 68px; height: 74px;
+      display: flex; align-items: center; justify-content: center;
+      color: #333;
+    }
+    /* テーブル内ボタンは少し小さく */
+    .desktop-view .char-btn { width: 68px; min-height: 78px; padding: 6px 4px 4px; }
+    .desktop-view .char-btn img { width: 44px; height: 50px; }
+    .desktop-view .char-name { display: none; }
+
+    /* ===== 再生中バー ===== */
     .now-playing {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-width: 600px;
+      bottom: 0; left: 0; right: 0;
       margin: 0 auto;
       background: #1a1a1a;
       border-top: 1px solid #333;
@@ -150,17 +191,10 @@
       gap: 8px;
       min-height: 50px;
     }
-    .now-playing-label {
-      font-size: 0.7rem;
-      color: #666;
-      flex-shrink: 0;
-    }
+    .now-playing-label { font-size: 0.7rem; color: #666; flex-shrink: 0; }
     .now-playing-icons {
-      display: flex;
-      gap: 5px;
-      flex: 1;
-      overflow-x: auto;
-      scrollbar-width: none;
+      display: flex; gap: 5px; flex: 1;
+      overflow-x: auto; scrollbar-width: none;
     }
     .now-playing-icons::-webkit-scrollbar { display: none; }
     .mini-char {
@@ -171,15 +205,12 @@
       white-space: nowrap;
     }
 
-    /* ローディング */
+    /* ===== ローディング ===== */
     #loading {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: #0f0f0f;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       z-index: 100;
     }
     .spinner {
@@ -190,28 +221,24 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text {
-      color: #a855f7;
-      margin-top: 14px;
-      font-size: 0.95rem;
-    }
+    .loading-text { color: #a855f7; margin-top: 14px; font-size: 0.95rem; }
 
-    /* 音符エフェクト */
-    .note {
-      position: absolute;
-      top: -6px;
-      font-size: 0.9rem;
-      animation: float-note 1.1s ease-out forwards;
-      pointer-events: none;
-      z-index: 5;
+    /* ===== レスポンシブ切替（自動）===== */
+    /* PC幅では desktop-view を表示、mobile-view を隠す */
+    body.auto-mode .desktop-view { display: none; }
+    body.auto-mode .mobile-view  { display: block; }
+    @media (min-width: 820px) {
+      body.auto-mode .desktop-view { display: block; }
+      body.auto-mode .mobile-view  { display: none; }
     }
-    @keyframes float-note {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-32px) scale(1.3); }
-    }
+    /* 手動切替 */
+    body.force-desktop .desktop-view { display: block; }
+    body.force-desktop .mobile-view  { display: none; }
+    body.force-mobile .desktop-view  { display: none; }
+    body.force-mobile .mobile-view   { display: block; }
   </style>
 </head>
-<body>
+<body class="auto-mode">
 
 <div id="loading">
   <div class="spinner"></div>
@@ -220,12 +247,25 @@
 
 <header>
   <h1>🎵 Sprunki Mixer</h1>
-  <button class="reset-btn" onclick="resetAll()">🔄 リセット</button>
+  <div class="header-right">
+    <button class="view-btn" id="view-btn" onclick="cycleView()">🖥 自動</button>
+    <button class="reset-btn" onclick="resetAll()">🔄 リセット</button>
+  </div>
 </header>
 
-<div class="phase-tabs" id="phase-tabs"></div>
+<!-- モバイル：タブ + グリッド -->
+<div class="mobile-view">
+  <div class="phase-tabs" id="phase-tabs"></div>
+  <div class="char-grid" id="char-grid"></div>
+</div>
 
-<div class="char-grid" id="char-grid"></div>
+<!-- PC：テーブル -->
+<div class="desktop-view">
+  <table>
+    <thead id="thead"></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
 
 <div class="now-playing">
   <span class="now-playing-label">再生中</span>
@@ -245,16 +285,14 @@ const PHASE_CONFIG = [
 const NOTES = ['♩','♪','♫','♬','🎵','🎶'];
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-const audioBuffers = {};   // soundPath -> AudioBuffer
-const activeSources = {};  // stateKey -> source
-const activeState = {};    // stateKey -> {phaseKey, canonKey, charData}
-
-let currentPhase = 'phase3'; // 表示中フェーズ
+const audioBuffers = {};
+const activeSources = {};
+const activeState = {};   // stateKey -> {phaseKey, canonKey, charData}
+let currentPhase = 'phase3';
 
 // ===== クォンタイズ同期 =====
 const LOOP_DURATION = 8.0;
 let masterStartTime = null;
-
 function getQuantizedStart() {
   const now = audioCtx.currentTime;
   if (masterStartTime === null) return now + 0.02;
@@ -263,7 +301,24 @@ function getQuantizedStart() {
   return masterStartTime + (cyclesDone + 1) * LOOP_DURATION;
 }
 
-// ===== タブ生成 =====
+function hexToRgba(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+
+// ===== 表示モード切替 =====
+const VIEW_MODES = ['auto', 'desktop', 'mobile'];
+const VIEW_LABELS = { auto: '🖥 自動', desktop: '🖥 PC', mobile: '📱 スマホ' };
+let viewModeIdx = 0;
+function cycleView() {
+  viewModeIdx = (viewModeIdx + 1) % 3;
+  const mode = VIEW_MODES[viewModeIdx];
+  document.body.className = mode === 'auto' ? 'auto-mode' :
+                           (mode === 'desktop' ? 'force-desktop' : 'force-mobile');
+  document.getElementById('view-btn').textContent = VIEW_LABELS[mode];
+}
+
+// ===== モバイル：タブ =====
 function buildTabs() {
   const container = document.getElementById('phase-tabs');
   container.innerHTML = '';
@@ -271,31 +326,17 @@ function buildTabs() {
     const tab = document.createElement('div');
     tab.className = 'phase-tab';
     tab.textContent = phase.label;
-    tab.dataset.phase = phase.key;
     if (phase.key === currentPhase) {
-      tab.classList.add('active-tab');
       tab.style.background = hexToRgba(phase.color, 0.25);
       tab.style.color = phase.color;
       tab.style.borderColor = phase.color;
     }
-    tab.addEventListener('click', () => switchPhase(phase.key));
+    tab.addEventListener('click', () => { currentPhase = phase.key; buildTabs(); buildGrid(); });
     container.appendChild(tab);
   });
 }
 
-function hexToRgba(hex, a) {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
-}
-
-// ===== フェーズ切替 =====
-function switchPhase(phaseKey) {
-  currentPhase = phaseKey;
-  buildTabs();
-  buildGrid();
-}
-
-// ===== グリッド生成 =====
+// ===== モバイル：グリッド =====
 function buildGrid() {
   const grid = document.getElementById('char-grid');
   grid.innerHTML = '';
@@ -304,60 +345,110 @@ function buildGrid() {
 
   CANONICAL_CHARS.forEach(canon => {
     const c = phaseData[canon.key];
-    if (!c) return; // このフェーズにいないキャラはスキップ
-
-    const stateKey = currentPhase + '_' + canon.key;
-    const btn = document.createElement('div');
-    btn.className = 'char-btn';
-    btn.dataset.stateKey = stateKey;
-    btn.style.color = phaseColor;
-    btn.title = c.name;
-    btn.innerHTML = `
-      <span class="playing-dot"></span>
-      <img src="${c.image}" alt="${canon.display}">
-      <div class="char-name">${canon.display}</div>
-    `;
-    if (activeState[stateKey]) {
-      btn.classList.add('active');
-      btn.style.borderColor = phaseColor;
-      btn.style.background = hexToRgba(phaseColor, 0.1);
-      btn.style.boxShadow = `0 0 14px ${hexToRgba(phaseColor, 0.35)}`;
-    }
-    btn.addEventListener('click', () => toggleChar(currentPhase, canon.key, c, btn, phaseColor));
-    grid.appendChild(btn);
+    if (!c) return;
+    grid.appendChild(makeCharBtn(currentPhase, canon, c, phaseColor, false));
   });
 }
 
+// ===== PC：テーブル =====
+function buildTable() {
+  // ヘッダー
+  const thead = document.getElementById('thead');
+  const trh = document.createElement('tr');
+  trh.appendChild(document.createElement('th'));
+  CANONICAL_CHARS.forEach(c => {
+    const th = document.createElement('th');
+    th.textContent = c.display;
+    trh.appendChild(th);
+  });
+  thead.innerHTML = '';
+  thead.appendChild(trh);
+
+  // ボディ
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  PHASE_CONFIG.forEach(phase => {
+    const tr = document.createElement('tr');
+    const tdLabel = document.createElement('td');
+    tdLabel.className = 'phase-label';
+    tdLabel.innerHTML = `<span style="background:${hexToRgba(phase.color,0.15)};color:${phase.color};border:1px solid ${hexToRgba(phase.color,0.3)};">${phase.label}</span>`;
+    tr.appendChild(tdLabel);
+
+    const phaseData = PHASES_ALIGNED[phase.key];
+    CANONICAL_CHARS.forEach(canon => {
+      const td = document.createElement('td');
+      td.className = 'char-cell';
+      const c = phaseData[canon.key];
+      if (c) {
+        td.appendChild(makeCharBtn(phase.key, canon, c, phase.color, true));
+      } else {
+        td.innerHTML = '<div class="char-empty">—</div>';
+      }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+// ===== キャラボタン生成（共通）=====
+function makeCharBtn(phaseKey, canon, charData, phaseColor, isDesktop) {
+  const stateKey = phaseKey + '_' + canon.key;
+  const btn = document.createElement('div');
+  btn.className = 'char-btn';
+  btn.dataset.stateKey = stateKey;
+  btn.style.color = phaseColor;
+  btn.title = charData.name;
+  btn.innerHTML = `
+    <span class="playing-dot"></span>
+    <img src="${charData.image}" alt="${canon.display}">
+    <div class="char-name">${canon.display}</div>
+  `;
+  if (activeState[stateKey]) applyActiveStyle(btn, phaseColor);
+  btn.addEventListener('click', () => toggleChar(phaseKey, canon.key, charData, phaseColor));
+  return btn;
+}
+
+function applyActiveStyle(btn, color) {
+  btn.classList.add('active');
+  btn.style.borderColor = color;
+  btn.style.background = hexToRgba(color, 0.1);
+  btn.style.boxShadow = `0 0 14px ${hexToRgba(color, 0.35)}`;
+}
+function clearActiveStyle(btn) {
+  btn.classList.remove('active', 'pending');
+  btn.style.borderColor = '';
+  btn.style.background = '';
+  btn.style.boxShadow = '';
+}
+
+// 全ビューの同じstateKeyのボタンを取得（PC・モバイル両方）
+function getButtons(stateKey) {
+  return document.querySelectorAll(`[data-state-key="${stateKey}"]`);
+}
+
 // ===== キャラ ON/OFF =====
-function toggleChar(phaseKey, canonKey, charData, btn, phaseColor) {
+function toggleChar(phaseKey, canonKey, charData, phaseColor) {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   const stateKey = phaseKey + '_' + canonKey;
+  const btns = getButtons(stateKey);
 
   if (activeState[stateKey]) {
-    // オフ
     delete activeState[stateKey];
     stopLoop(stateKey);
-    btn.classList.remove('active', 'pending');
-    btn.style.borderColor = '';
-    btn.style.background = '';
-    btn.style.boxShadow = '';
+    btns.forEach(clearActiveStyle);
   } else {
-    // オン
     activeState[stateKey] = { phaseKey, canonKey, charData };
     const startAt = getQuantizedStart();
     const waitMs = Math.max(0, (startAt - audioCtx.currentTime) * 1000);
-
-    btn.classList.add('pending');
+    btns.forEach(b => b.classList.add('pending'));
     playLoopAt(stateKey, charData.sound, startAt);
-
     setTimeout(() => {
       if (activeState[stateKey]) {
-        btn.classList.remove('pending');
-        btn.classList.add('active');
-        btn.style.borderColor = phaseColor;
-        btn.style.background = hexToRgba(phaseColor, 0.1);
-        btn.style.boxShadow = `0 0 14px ${hexToRgba(phaseColor, 0.35)}`;
-        spawnNotes(btn);
+        getButtons(stateKey).forEach(b => {
+          b.classList.remove('pending');
+          applyActiveStyle(b, phaseColor);
+          spawnNotes(b);
+        });
       }
     }, waitMs);
   }
@@ -389,14 +480,13 @@ function stopLoop(stateKey) {
 function resetAll() {
   Object.keys(activeState).forEach(k => {
     stopLoop(k);
+    getButtons(k).forEach(clearActiveStyle);
     delete activeState[k];
   });
   masterStartTime = null;
-  buildGrid();
   updateNowPlaying();
 }
 
-// ===== 再生中バー更新 =====
 function updateNowPlaying() {
   const container = document.getElementById('now-playing-icons');
   const keys = Object.keys(activeState);
@@ -438,7 +528,6 @@ async function loadSounds() {
   const sounds = [...soundSet];
   let done = 0;
   const loadText = document.getElementById('load-text');
-
   for (const sound of sounds) {
     try {
       const res = await fetch(sound);
@@ -453,6 +542,7 @@ async function loadSounds() {
 
 buildTabs();
 buildGrid();
+buildTable();
 updateNowPlaying();
 loadSounds();
 </script>
